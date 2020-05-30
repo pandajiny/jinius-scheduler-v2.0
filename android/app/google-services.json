@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "164792061264",
+    "firebase_url": "https://jinius-scheduler.firebaseio.com",
+    "project_id": "jinius-scheduler",
+    "storage_bucket": "jinius-scheduler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164792061264:android:3bac2c3efd7f6d2bdfb055",
+        "android_client_info": {
+          "package_name": "com.example.jiniusscheduler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164792061264-vq38vu4fbrk4tls14lb9f0ejg4is76h9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jiniusscheduler",
+            "certificate_hash": "96fce61d5f3417fe93e04f81ab9bbcf09c8d7b4b"
+          }
+        },
+        {
+          "client_id": "164792061264-s04n0llpjg7d4n89is6hdn1qm2ovb2j2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8sWNAJrvMVeuy32ve5uUCQ-LzMu8LpSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164792061264-s04n0llpjg7d4n89is6hdn1qm2ovb2j2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
