@@ -26,7 +26,7 @@ Goal
 
 - make standart login page activity
 
-Goal
+* Goal
 
 login feature
 
