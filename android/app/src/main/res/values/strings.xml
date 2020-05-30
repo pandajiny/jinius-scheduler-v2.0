@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Jinius Scheduler</string>
+    <string name="login_titlte">Login</string>
 </resources>
