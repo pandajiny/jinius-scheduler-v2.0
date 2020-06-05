@@ -1,12 +1,15 @@
-package com.example.jiniusscheduler.Schedules
+package com.example.jiniusscheduler.schedules
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jiniusscheduler.R
+import com.example.jiniusscheduler.schedules.todo.AddTodoActivity
+import com.example.jiniusscheduler.schedules.todo.EditTodoActivity
+import com.example.jiniusscheduler.schedules.todo.Todo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -23,7 +26,7 @@ class SchedulesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
 
-    private lateinit var scheduleList: ArrayList<Any>
+    private lateinit var scheduleList: ArrayList<Todo>
 
     private lateinit var viewAdapter: SchedulesListAdapter
 
@@ -36,7 +39,7 @@ class SchedulesActivity : AppCompatActivity() {
 
         checkAuth()
 
-        scheduleList = arrayListOf<Any>()
+        scheduleList = arrayListOf()
 
 
         viewAdapter = SchedulesListAdapter(this, scheduleList)
@@ -57,10 +60,21 @@ class SchedulesActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        val handler = Handler()
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                viewAdapter.notifyDataSetChanged()
+                handler.postDelayed(this, 1000)//1 sec delay
+            }
+        }, 0)
+    }
+
     private fun getScheduleList() {
         val myScheduleListReference = database.child("Users/${auth.currentUser!!.uid}/Schedules")
 
-        myScheduleListReference.child("SimpleTodo")
+        myScheduleListReference.child("Todo")
             .addChildEventListener(object : ChildEventListener {
                 override fun onCancelled(p0: DatabaseError) {
                     TODO("Not yet implemented")
@@ -70,20 +84,40 @@ class SchedulesActivity : AppCompatActivity() {
                     TODO("Not yet implemented")
                 }
 
-                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                    TODO("Not yet implemented")
+                override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
+                    val todo = dataSnapshot.getValue<Todo>()!!
+                    scheduleList.forEach {
+                        if (it.key == todo.key) {
+                            scheduleList.remove(it)
+                            scheduleList.add(todo)
+                            scheduleList.sortBy { Todo -> Todo.requestTimestamp }
+                            viewAdapter.notifyDataSetChanged()
+                            return
+                        }
+                    }
                 }
 
                 override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                    val schedule = dataSnapshot.getValue<SimpleTodo>()
-                    if (schedule is SimpleTodo) {
+                    val schedule = dataSnapshot.getValue<Todo>()
+                    if (schedule is Todo) {
                         scheduleList.add(schedule)
+                        scheduleList.sortBy { Todo -> Todo.requestTimestamp }
                     }
                     viewAdapter.notifyDataSetChanged()
                 }
 
-                override fun onChildRemoved(p0: DataSnapshot) {
-                    TODO("Not yet implemented")
+                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                    val todo = dataSnapshot.getValue<Todo>()
+                    if (todo is Todo) {
+                        scheduleList.forEach {
+                            if (it.key == todo.key) {
+                                scheduleList.remove(todo)
+                                scheduleList.sortBy { Todo -> Todo.requestTimestamp }
+                                viewAdapter.notifyDataSetChanged()
+                                return
+                            }
+                        }
+                    }
                 }
             })
 
@@ -95,10 +129,20 @@ class SchedulesActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun startEditTodoActivity(key: String) {
+        val intent = Intent(this, EditTodoActivity::class.java).putExtra("key", key)
+        startActivity(intent)
+    }
+
     private fun checkAuth() {
         if (auth.currentUser?.uid == null) {
             finish()
         }
     }
 
+    fun checkDone(key: String, value: Boolean) {
+        val currentTodoReference =
+            database.child("Users/${auth.currentUser!!.uid}/Schedules/Todo/${key}")
+        currentTodoReference.child("done").setValue(value)
+    }
 }

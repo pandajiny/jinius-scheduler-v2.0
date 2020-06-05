@@ -1,4 +1,4 @@
-package com.example.jiniusscheduler.schedules
+package com.example.jiniusscheduler.schedules.todo
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

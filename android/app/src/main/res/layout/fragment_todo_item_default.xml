@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".Schedules.ScheduledTodoItemFragment">
+    tools:context=".schedules.todo.ScheduledTodoItemFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+        android:id="@+id/defaultTodoItemContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -16,46 +16,38 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/round_bg"
-        android:backgroundTint="@android:color/holo_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/scheduledTodoItemContentText"
-            android:layout_width="wrap_content"
+            android:id="@+id/defaultTodoItemContentText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:inputType="textMultiLine|textImeMultiLine"
             android:text="TextView"
             android:textColor="@android:color/white"
             android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="@id/container"
-            app:layout_constraintTop_toTopOf="@id/container" />
-
-        <CheckBox
-            android:id="@+id/scheduledTodoItemCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:buttonTint="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/defaultTodoItemCheckBox"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/scheduledTodoItemRemainTimeText"
+        <CheckBox
+            android:id="@+id/defaultTodoItemCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="TextView"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/container"
-            app:layout_constraintEnd_toEndOf="@id/container"
-            app:layout_constraintTop_toBottomOf="@+id/scheduledTodoItemContentText" />
+            android:buttonTint="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

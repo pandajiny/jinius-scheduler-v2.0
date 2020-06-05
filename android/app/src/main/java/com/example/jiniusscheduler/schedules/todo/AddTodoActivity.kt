@@ -1,13 +1,13 @@
-package com.example.jiniusscheduler.Schedules
+package com.example.jiniusscheduler.schedules.todo
 
 import TimeCallbackListener
 import TimePickerFragment
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import com.example.jiniusscheduler.R
+import com.example.jiniusscheduler.schedules.DateCallbackListener
+import com.example.jiniusscheduler.schedules.DatePickerFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -15,9 +15,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_add_todo.*
 import java.sql.Timestamp
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -123,7 +120,7 @@ class AddTodoActivity : AppCompatActivity() {
             key,
             auth.currentUser!!.uid,
             "DEFAULT_TODO",
-            findViewById<TextView>(R.id.addToddContentText).text.toString(),
+            findViewById<TextView>(R.id.addTodoContentText).text.toString(),
             System.currentTimeMillis(),
             false
         )

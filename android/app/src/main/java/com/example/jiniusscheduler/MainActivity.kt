@@ -3,7 +3,7 @@ package com.example.jiniusscheduler
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.jiniusscheduler.Schedules.SchedulesActivity
+import com.example.jiniusscheduler.schedules.SchedulesActivity
 import com.example.jiniusscheduler.auth.LoginActivity
 import com.example.jiniusscheduler.friends.FriendsActivity
 import com.google.firebase.auth.FirebaseAuth

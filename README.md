@@ -58,22 +58,61 @@ todolist page
 
 login feature
 
-- add github login method
-- add email method and require verification
+- add github login method 😢
+- add email method and require verification 😢
 
 friends page
 
-- define my profile
-- define profile class
-- finding user page
-- adding friends
-- handling friend request
-- display my friends list
+- define my profile 😢
+- define profile class 😢
+- finding user page 😢
+- adding friends 😢
+- handling friend request 😢
+- display my friends list 😢
 
 schedule page
 
-- Assignment class define
-- todoWithDeadLine class define
-- edit todo page
-- remove todo
-- learn using clock widget
+- Assignment class define 😢
+- todoWithDeadLine class define 😢
+- edit todo page 😢
+- remove todo 😢
+- learn using clock widget 😢
+- done or not yet 😢
+
+# June 4 2020
+
+login feature
+
+- add github login method 😢
+- add email method and require verification 😢
+
+friends page
+
+- define my profile 😢
+- define profile class 😢
+- finding user page 😢
+- adding friends 😢
+- handling friend request 😢
+- display my friends list 😢
+
+schedule page
+
+- scheduledTodo define ✔️
+- edit todo page 😢
+- remove todo 😢
+- learn using clock widget ✔️
+- done or not yet ✔️
+
+# June 5 2020
+
+programmers Application
+
+- organize document
+- do implement must be included functions ✔️
+
+must be included
+
+- remove todo ✔️
+- edit todo ✔️
+- change design when todo's done ✔️
+- change design when todo had passed scheduled time ✔️

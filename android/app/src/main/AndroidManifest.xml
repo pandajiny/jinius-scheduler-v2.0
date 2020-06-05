@@ -10,8 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Schedules.AddTodoActivity"></activity>
-        <activity android:name=".Schedules.SchedulesActivity" />
+        <activity android:name=".schedules.todo.EditTodoActivity"></activity>
+        <activity android:name=".schedules.todo.AddTodoActivity" />
+        <activity android:name=".schedules.SchedulesActivity" />
         <activity android:name=".friends.FriendsActivity" />
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".MainActivity">

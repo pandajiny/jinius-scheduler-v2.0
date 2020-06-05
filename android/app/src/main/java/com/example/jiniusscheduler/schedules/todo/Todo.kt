@@ -1,7 +1,6 @@
-package com.example.jiniusscheduler.schedules
+package com.example.jiniusscheduler.schedules.todo
 
 import com.google.firebase.database.IgnoreExtraProperties
-import java.sql.Timestamp
 
 @IgnoreExtraProperties
 data class Todo(
