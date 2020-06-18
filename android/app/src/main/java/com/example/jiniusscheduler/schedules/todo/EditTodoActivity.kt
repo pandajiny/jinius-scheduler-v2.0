@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import com.example.jiniusscheduler.R
-import com.example.jiniusscheduler.schedules.DateCallbackListener
-import com.example.jiniusscheduler.schedules.DatePickerFragment
+import com.example.jiniusscheduler.schedules.pickers.DateCallbackListener
+import com.example.jiniusscheduler.schedules.pickers.DatePickerFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot

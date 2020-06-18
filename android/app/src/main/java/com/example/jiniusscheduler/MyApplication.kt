@@ -7,7 +7,6 @@ import com.google.firebase.ktx.Firebase
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-//        Realm init with Application context
         enablePersistence()
     }
 

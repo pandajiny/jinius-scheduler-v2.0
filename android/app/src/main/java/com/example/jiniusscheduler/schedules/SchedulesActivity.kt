@@ -7,9 +7,13 @@ import android.os.Handler
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jiniusscheduler.R
+import com.example.jiniusscheduler.database.DataListenerCallBack
 import com.example.jiniusscheduler.schedules.todo.AddTodoActivity
 import com.example.jiniusscheduler.schedules.todo.EditTodoActivity
 import com.example.jiniusscheduler.schedules.todo.Todo
+import com.example.jiniusscheduler.utils.DatabaseUtils
+import com.example.jiniusscheduler.utils.GetDataCallBack
+import com.example.jiniusscheduler.utils.ScheduleUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -20,6 +24,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import org.jetbrains.anko.toast
 
 class SchedulesActivity : AppCompatActivity() {
 
@@ -37,23 +42,27 @@ class SchedulesActivity : AppCompatActivity() {
         auth = Firebase.auth
         database = Firebase.database.reference
 
-        checkAuth()
-
         scheduleList = arrayListOf()
 
-
+//        set adapter for Schedules List RV
         viewAdapter = SchedulesListAdapter(this, scheduleList)
         val viewManager = LinearLayoutManager(this)
-
 
         findViewById<RecyclerView>(R.id.schedulesListRV).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
         }
+//       ---- end for set adapter ----
 
-        getScheduleList()
-
+//        set schedules child event listener
+        ScheduleUtils().getSchedules(scheduleList, object : DataListenerCallBack<ArrayList<Todo>> {
+            override fun onChanged(data: ArrayList<Todo>) {
+                scheduleList = data
+                viewAdapter.notifyDataSetChanged()
+            }
+        })
+//        ---- end for schedules listener ----
 
         findViewById<FloatingActionButton>(R.id.schedulesAddFAB).setOnClickListener {
             startAddTodoActivity()
@@ -62,6 +71,8 @@ class SchedulesActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+
         val handler = Handler()
         handler.postDelayed(object : Runnable {
             override fun run() {
@@ -71,58 +82,6 @@ class SchedulesActivity : AppCompatActivity() {
         }, 0)
     }
 
-    private fun getScheduleList() {
-        val myScheduleListReference = database.child("Users/${auth.currentUser!!.uid}/Schedules")
-
-        myScheduleListReference.child("Todo")
-            .addChildEventListener(object : ChildEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
-                    val todo = dataSnapshot.getValue<Todo>()!!
-                    scheduleList.forEach {
-                        if (it.key == todo.key) {
-                            scheduleList.remove(it)
-                            scheduleList.add(todo)
-                            scheduleList.sortBy { Todo -> Todo.requestTimestamp }
-                            viewAdapter.notifyDataSetChanged()
-                            return
-                        }
-                    }
-                }
-
-                override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                    val schedule = dataSnapshot.getValue<Todo>()
-                    if (schedule is Todo) {
-                        scheduleList.add(schedule)
-                        scheduleList.sortBy { Todo -> Todo.requestTimestamp }
-                    }
-                    viewAdapter.notifyDataSetChanged()
-                }
-
-                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                    val todo = dataSnapshot.getValue<Todo>()
-                    if (todo is Todo) {
-                        scheduleList.forEach {
-                            if (it.key == todo.key) {
-                                scheduleList.remove(todo)
-                                scheduleList.sortBy { Todo -> Todo.requestTimestamp }
-                                viewAdapter.notifyDataSetChanged()
-                                return
-                            }
-                        }
-                    }
-                }
-            })
-
-        myScheduleListReference.keepSynced(true)
-    }
 
     private fun startAddTodoActivity() {
         val intent = Intent(this, AddTodoActivity::class.java)
@@ -132,12 +91,6 @@ class SchedulesActivity : AppCompatActivity() {
     fun startEditTodoActivity(key: String) {
         val intent = Intent(this, EditTodoActivity::class.java).putExtra("key", key)
         startActivity(intent)
-    }
-
-    private fun checkAuth() {
-        if (auth.currentUser?.uid == null) {
-            finish()
-        }
     }
 
     fun checkDone(key: String, value: Boolean) {

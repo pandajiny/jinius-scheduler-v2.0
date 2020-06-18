@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jiniusscheduler.R
 import com.example.jiniusscheduler.schedules.todo.Todo
+import com.example.jiniusscheduler.utils.ScheduleUtils
 import kotlinx.android.synthetic.main.fragment_todo_item_default.view.*
 import kotlinx.android.synthetic.main.fragment_todo_item_scheduled.view.*
 import java.lang.IllegalArgumentException
@@ -25,8 +26,8 @@ class SchedulesListAdapter(
     RecyclerView.Adapter<SchedulesListAdapter.BaseViewHolder>() {
     //    constants for data type
     companion object {
-        private const val TYPE_DEFAULT_TODO = 0
-        private const val TYPE_SCHEDULED_TODO = 1
+        private const val TYPE_DEFAULT_TODO = 1000
+        private const val TYPE_SCHEDULED_TODO = 1001
     }
 
 
@@ -36,7 +37,6 @@ class SchedulesListAdapter(
     }
 
     inner class DefaultTodoViewHolder(itemView: View) : BaseViewHolder(itemView) {
-
         override fun bind(item: Any) {
             if (item is Todo) {
 //                set the content text
@@ -44,7 +44,6 @@ class SchedulesListAdapter(
 //               check Todo object's done
                 itemView.defaultTodoItemContentText.isEnabled = !item.done
                 itemView.defaultTodoItemCheckBox.isChecked = item.done
-
 
                 if (itemView.defaultTodoItemCheckBox.isChecked) {
                     itemView.defaultTodoItemContentText.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
@@ -58,8 +57,8 @@ class SchedulesListAdapter(
                 }
 
                 itemView.defaultTodoItemCheckBox.setOnClickListener {
-//                    request to database(in activity fx)
-                    activity.checkDone(item.key, !item.done)
+                    ScheduleUtils().toggleDone(key = item.key, prevValue = item.done)
+
 
                     if (itemView.defaultTodoItemCheckBox.isChecked) {
                         itemView.defaultTodoItemContentText.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
@@ -95,8 +94,8 @@ class SchedulesListAdapter(
                 }
 
                 itemView.scheduledTodoItemCheckBox.setOnClickListener {
-//                    request to database(in activity fx)
-                    activity.checkDone(item.key, !item.done)
+                    ScheduleUtils().toggleDone(key = item.key, prevValue = item.done)
+
                     if (itemView.scheduledTodoItemCheckBox.isChecked) {
                         itemView.scheduledTodoItemContentText.paintFlags =
                             Paint.STRIKE_THRU_TEXT_FLAG

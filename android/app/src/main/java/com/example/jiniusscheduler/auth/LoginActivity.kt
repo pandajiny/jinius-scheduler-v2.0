@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -36,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        findViewById<Button>(R.id.loginGoogleLoginButton).setOnClickListener { googleSignIn() }
+        loginGoogleLoginButton.setOnClickListener { googleSignIn() }
     }
 
     private fun googleSignIn() {

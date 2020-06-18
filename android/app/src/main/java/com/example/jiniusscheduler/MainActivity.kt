@@ -5,14 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.jiniusscheduler.schedules.SchedulesActivity
 import com.example.jiniusscheduler.auth.LoginActivity
-import com.example.jiniusscheduler.friends.FriendsActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.example.jiniusscheduler.utils.AuthCallBack
+import com.example.jiniusscheduler.utils.AuthUtils
+import com.example.jiniusscheduler.utils.DatabaseUtils
 
 class MainActivity : AppCompatActivity() {
-    lateinit var auth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -20,30 +17,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        checkAuth()
-    }
+        AuthUtils(object : AuthCallBack {
+            override fun onRequireAuth() {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
+            }
 
-    private fun checkAuth() {
-        if (Firebase.auth.currentUser == null) {
-            startLoginPage()
-        } else {
-            startSchedulesPage()
-        }
-    }
+            override fun onGetAuth() {
+                startActivity(Intent(this@MainActivity, SchedulesActivity::class.java))
+                finish()
+            }
+        })
 
-    private fun startLoginPage() {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-    }
 
-    private fun startSchedulesPage() {
-        val intent = Intent(this, SchedulesActivity::class.java)
-        startActivity(intent)
     }
-
-    private fun startFriendsPage() {
-        val intent = Intent(this, FriendsActivity::class.java)
-        startActivity(intent)
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.example.jiniusscheduler.schedules
+package com.example.jiniusscheduler.schedules.pickers
 
 import android.app.DatePickerDialog
 import android.app.Dialog

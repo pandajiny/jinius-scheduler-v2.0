@@ -57,4 +57,7 @@ dependencies {
 //    for firebase database
     implementation 'com.google.firebase:firebase-database-ktx:19.3.0'
 
+//    anko
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
 }

@@ -1,8 +1,5 @@
 package com.example.jiniusscheduler.schedules.todo
 
-import com.google.firebase.database.IgnoreExtraProperties
-
-@IgnoreExtraProperties
 data class Todo(
     var key: String = "",
     var uid: String = "",
@@ -13,3 +10,11 @@ data class Todo(
 //    optional
     var scheduledDateTime: Long? = null
 )
+
+
+
+
+
+
+
+
