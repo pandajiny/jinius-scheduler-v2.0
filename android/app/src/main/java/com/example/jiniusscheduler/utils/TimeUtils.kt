@@ -1,7 +1,9 @@
 package com.example.jiniusscheduler.utils
 
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class TimeUtils {
     class DateTime(
@@ -21,6 +23,18 @@ class TimeUtils {
             current.dayOfMonth,
             current.hour,
             current.minute
+        )
+    }
+
+    fun getDateTime(timestamp: Long): DateTime {
+        val timeObject =
+            Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        return DateTime(
+            timeObject.year,
+            timeObject.month.ordinal,
+            timeObject.dayOfMonth,
+            timeObject.hour,
+            timeObject.minute
         )
     }
 

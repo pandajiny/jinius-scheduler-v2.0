@@ -8,94 +8,42 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jiniusscheduler.R
 import com.example.jiniusscheduler.database.DataListenerCallBack
-import com.example.jiniusscheduler.schedules.todo.AddTodoActivity
+import com.example.jiniusscheduler.database.Database
 import com.example.jiniusscheduler.schedules.todo.EditTodoActivity
-import com.example.jiniusscheduler.schedules.todo.Todo
-import com.example.jiniusscheduler.utils.DatabaseUtils
-import com.example.jiniusscheduler.utils.GetDataCallBack
 import com.example.jiniusscheduler.utils.ScheduleUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_schedules.*
 import org.jetbrains.anko.toast
 
 class SchedulesActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
-
-    private lateinit var scheduleList: ArrayList<Todo>
-
-    private lateinit var viewAdapter: SchedulesListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedules)
 
-        auth = Firebase.auth
-        database = Firebase.database.reference
-
-        scheduleList = arrayListOf()
-
-//        set adapter for Schedules List RV
-        viewAdapter = SchedulesListAdapter(this, scheduleList)
-        val viewManager = LinearLayoutManager(this)
-
-        findViewById<RecyclerView>(R.id.schedulesListRV).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.scheduleListContainer, ScheduleListFragment())
+                .commit()
         }
-//       ---- end for set adapter ----
 
-//        set schedules child event listener
-        ScheduleUtils().getSchedules(scheduleList, object : DataListenerCallBack<ArrayList<Todo>> {
-            override fun onChanged(data: ArrayList<Todo>) {
-                scheduleList = data
-                viewAdapter.notifyDataSetChanged()
-            }
-        })
-//        ---- end for schedules listener ----
-
-        findViewById<FloatingActionButton>(R.id.schedulesAddFAB).setOnClickListener {
-            startAddTodoActivity()
+        schedulesAddFAB.setOnClickListener {
+            startActivity(Intent(this, EditTodoActivity::class.java))
         }
     }
 
     override fun onStart() {
         super.onStart()
-
-
-        val handler = Handler()
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                viewAdapter.notifyDataSetChanged()
-                handler.postDelayed(this, 1000)//1 sec delay
-            }
-        }, 0)
-    }
-
-
-    private fun startAddTodoActivity() {
-        val intent = Intent(this, AddTodoActivity::class.java)
-        startActivity(intent)
     }
 
     fun startEditTodoActivity(key: String) {
         val intent = Intent(this, EditTodoActivity::class.java).putExtra("key", key)
         startActivity(intent)
-    }
-
-    fun checkDone(key: String, value: Boolean) {
-        val currentTodoReference =
-            database.child("Users/${auth.currentUser!!.uid}/Schedules/Todo/${key}")
-        currentTodoReference.child("done").setValue(value)
     }
 }

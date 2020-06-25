@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editTodoCancleImageButton" />
 
     <View
-        android:id="@+id/view2"
+        android:id="@+id/devider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
@@ -64,7 +64,7 @@
         android:text="2020/6/3"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTodoScheduleCheckBox" />
+        app:layout_constraintTop_toBottomOf="@+id/editTodoScheduledCheckBox" />
 
     <TextView
         android:id="@+id/editTodoTimeText"
@@ -78,7 +78,7 @@
 
 
     <CheckBox
-        android:id="@+id/editTodoScheduleCheckBox"
+        android:id="@+id/editTodoScheduledCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -88,7 +88,7 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
+        app:layout_constraintTop_toBottomOf="@+id/devider" />
 
     <View
         android:id="@+id/view"
@@ -109,6 +109,7 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:tint="@android:color/white"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_delete_black_24dp" />

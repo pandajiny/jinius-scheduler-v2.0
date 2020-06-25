@@ -15,10 +15,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [ScheduledTodoItemFragment.newInstance] factory method to
+ * Use the [ScheduleItemTodoSimple.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ScheduledTodoItemFragment : Fragment() {
+class ScheduleItemTodoSimple : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -36,7 +36,7 @@ class ScheduledTodoItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_todo_item_scheduled, container, false)
+        return inflater.inflate(R.layout.fragment_schedule_item_todo_simple, container, false)
     }
 
     companion object {
@@ -46,13 +46,12 @@ class ScheduledTodoItemFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment ScheduledTodoItemFragment.
+         * @return A new instance of fragment ScheduleItemTodoSimple.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            ScheduledTodoItemFragment()
-                .apply {
+            ScheduleItemTodoSimple().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

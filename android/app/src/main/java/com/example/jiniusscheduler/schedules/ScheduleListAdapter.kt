@@ -1,29 +1,24 @@
 package com.example.jiniusscheduler.schedules
 
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Paint
-import android.text.Layout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jiniusscheduler.R
-import com.example.jiniusscheduler.schedules.todo.Todo
+import com.example.jiniusscheduler.database.Database
 import com.example.jiniusscheduler.utils.ScheduleUtils
-import kotlinx.android.synthetic.main.fragment_todo_item_default.view.*
-import kotlinx.android.synthetic.main.fragment_todo_item_scheduled.view.*
+import kotlinx.android.synthetic.main.fragment_schedule_item_todo_simple.view.*
+import kotlinx.android.synthetic.main.fragment_schedule_item_todo_scheduled.view.*
 import java.lang.IllegalArgumentException
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SchedulesListAdapter(
-    private val activity: SchedulesActivity,
-    private var data: ArrayList<Todo>
+class ScheduleListAdapter(
+    private var data: ArrayList<Database.SCHEDULE>
 ) :
-    RecyclerView.Adapter<SchedulesListAdapter.BaseViewHolder>() {
+    RecyclerView.Adapter<ScheduleListAdapter.BaseViewHolder>() {
     //    constants for data type
     companion object {
         private const val TYPE_DEFAULT_TODO = 1000
@@ -38,9 +33,9 @@ class SchedulesListAdapter(
 
     inner class DefaultTodoViewHolder(itemView: View) : BaseViewHolder(itemView) {
         override fun bind(item: Any) {
-            if (item is Todo) {
+            if (item is Database.SCHEDULE) {
 //                set the content text
-                itemView.defaultTodoItemContentText.text = item.content
+                itemView.defaultTodoItemContentText.text = item.title
 //               check Todo object's done
                 itemView.defaultTodoItemContentText.isEnabled = !item.done
                 itemView.defaultTodoItemCheckBox.isChecked = item.done
@@ -53,11 +48,11 @@ class SchedulesListAdapter(
                 }
 
                 itemView.defaultTodoItemContentText.setOnClickListener {
-                    activity.startEditTodoActivity(item.key)
+//                    activity.startEditTodoActivity(item.key)
                 }
 
                 itemView.defaultTodoItemCheckBox.setOnClickListener {
-                    ScheduleUtils().toggleDone(key = item.key, prevValue = item.done)
+                    ScheduleUtils().toggleDone(id = item.key, prevValue = item.done)
 
 
                     if (itemView.defaultTodoItemCheckBox.isChecked) {
@@ -73,9 +68,9 @@ class SchedulesListAdapter(
 
     inner class ScheduledTodoViewHolder(itemView: View) : BaseViewHolder(itemView) {
         override fun bind(item: Any) {
-            if (item is Todo) {
+            if (item is Database.SCHEDULE) {
 //                set the content text
-                itemView.scheduledTodoItemContentText.text = item.content
+                itemView.scheduledTodoItemContentText.text = item.title
 //               check Todo object's done
                 itemView.scheduledTodoItemCheckBox.isChecked = item.done
 
@@ -90,11 +85,11 @@ class SchedulesListAdapter(
                     getRemainTime(item.scheduledDateTime)
 
                 itemView.scheduledTodoItemContentText.setOnClickListener {
-                    activity.startEditTodoActivity(item.key)
+//                    activity.startEditTodoActivity(item.key)
                 }
 
                 itemView.scheduledTodoItemCheckBox.setOnClickListener {
-                    ScheduleUtils().toggleDone(key = item.key, prevValue = item.done)
+                    ScheduleUtils().toggleDone(id = item.key, prevValue = item.done)
 
                     if (itemView.scheduledTodoItemCheckBox.isChecked) {
                         itemView.scheduledTodoItemContentText.paintFlags =
@@ -123,13 +118,13 @@ class SchedulesListAdapter(
 //        check the view type
         return when (viewType) {
             TYPE_DEFAULT_TODO -> {
-                val view = LayoutInflater.from(activity.baseContext)
-                    .inflate(R.layout.fragment_todo_item_default, parent, false)
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.fragment_schedule_item_todo_simple, parent, false)
                 DefaultTodoViewHolder(view)
             }
             TYPE_SCHEDULED_TODO -> {
-                val view = LayoutInflater.from(activity.baseContext)
-                    .inflate(R.layout.fragment_todo_item_scheduled, parent, false)
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.fragment_schedule_item_todo_scheduled, parent, false)
                 ScheduledTodoViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")
@@ -140,8 +135,8 @@ class SchedulesListAdapter(
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val element = data[position]
         when (holder) {
-            is DefaultTodoViewHolder -> holder.bind(element as Todo)
-            is ScheduledTodoViewHolder -> holder.bind(element as Todo)
+            is DefaultTodoViewHolder -> holder.bind(element as Database.SCHEDULE)
+            is ScheduledTodoViewHolder -> holder.bind(element as Database.SCHEDULE)
         }
     }
 

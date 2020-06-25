@@ -4,101 +4,65 @@ import TimeCallbackListener
 import TimePickerFragment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.example.jiniusscheduler.R
+import com.example.jiniusscheduler.database.SaveDataCallBack
+import com.example.jiniusscheduler.database.Database
 import com.example.jiniusscheduler.schedules.pickers.DateCallbackListener
 import com.example.jiniusscheduler.schedules.pickers.DatePickerFragment
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_edit_todo.*
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.jiniusscheduler.utils.ScheduleUtils
+import com.example.jiniusscheduler.utils.TimeUtils
+import kotlinx.android.synthetic.main.activity_todo_edit.*
+import org.jetbrains.anko.toast
 
 class EditTodoActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
+    private var todo = Database.SCHEDULE()
+    private var dateTime = TimeUtils().createCurrentDateTime()
+    private var isLoading = false
 
-
-    var currentYear: Int? = null
-    var currentMonth: Int? = null
-    var currentDayOfMonth: Int? = null
-
-    var currentMinute: Int? = null
-    var currentHour: Int? = null
+    enum class EDIT_TYPES {
+        ADD_TODO,
+        EDIT_TODO
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_todo)
-
-        auth = Firebase.auth
-        database = Firebase.database.reference
+        setContentView(R.layout.activity_todo_edit)
     }
+
 
     override fun onStart() {
         super.onStart()
-//        check auth
-        if (auth.currentUser == null) {
-            finish()
-        }
-//        get data
         val key = intent.extras?.getString("key")
-        if (key == null) {
-            finish()
+        if (key.isNullOrEmpty()) {
+            initializeView(EDIT_TYPES.ADD_TODO, null)
         } else {
-            getTodo(key)
+            initializeView(EDIT_TYPES.EDIT_TODO, key)
         }
     }
 
-    private fun getTodo(key: String) {
-        val currentTodoReference =
-            database.child("Users/${auth.currentUser!!.uid}/Schedules/Todo/${key}")
-        currentTodoReference.keepSynced(true)
-        currentTodoReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val todo = dataSnapshot.getValue<Todo>()
-                if (todo is Todo) {
-                    initView(todo)
-                }
-            }
-        })
-    }
-
-    private fun initView(todo: Todo) {
-//        update ui with todo
-
-//        set content
-        editTodoContentText.setText(todo.content)
-
-        if (todo.scheduledDateTime != null) {
-            editTodoScheduleCheckBox.isChecked = true
-            editTodoDateText.text =
-                SimpleDateFormat("yyyy/MM/dd").format(Date(todo.scheduledDateTime!!))
-            val hours = todo.scheduledDateTime!! / 1000 / 3600 % 24
-            val minutes = todo.scheduledDateTime!! / 1000 / 60 % 60
-            editTodoTimeText.text = "${hours}:${minutes}"
+    private fun initializeView(type: EDIT_TYPES, key: String?) {
+        editTodoCancleImageButton.setOnClickListener {
+            finish()
         }
 
-        editTodoDateText.isEnabled = editTodoScheduleCheckBox.isChecked
-        editTodoTimeText.isEnabled = editTodoScheduleCheckBox.isChecked
-
-        editTodoScheduleCheckBox.setOnClickListener {
-            editTodoDateText.isEnabled = editTodoScheduleCheckBox.isChecked
-            editTodoTimeText.isEnabled = editTodoScheduleCheckBox.isChecked
+        editTodoSaveTextButton.setOnClickListener {
+            saveTodo(key)
         }
 
+
+        editTodoDateText.text =
+            TimeUtils().dateToString(dateTime.year, dateTime.month, dateTime.dayOfMonth)
+        editTodoTimeText.text =
+            TimeUtils().timeToString(dateTime.hourOfDay, dateTime.minute)
+
+        editTodoScheduledCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            editTodoDateText.isEnabled = isChecked
+            editTodoTimeText.isEnabled = isChecked
+        }
 
 //        when click date text
         editTodoDateText.setOnClickListener {
@@ -106,94 +70,95 @@ class EditTodoActivity : AppCompatActivity() {
             val dateCallbackListener = object :
                 DateCallbackListener {
                 override fun onDataReceived(year: Int, month: Int, dayOfMonth: Int) {
-                    currentYear = year - 1900
-                    currentMonth = month
-                    currentDayOfMonth = dayOfMonth
-                    editTodoDateText.text = "${year}/${month + 1}/${dayOfMonth}"
+                    dateTime.year = year
+                    dateTime.month = month
+                    dateTime.dayOfMonth = dayOfMonth
+                    editTodoDateText.text = TimeUtils().dateToString(year, month, dayOfMonth)
                 }
             }
             DatePickerFragment(
                 dateCallbackListener
             ).show(supportFragmentManager, "timePicker")
         }
+
+
 //        when click time text
         editTodoTimeText.setOnClickListener {
 //            start dialog fragment with call back
             val timeCallbackListener = object :
                 TimeCallbackListener {
                 override fun onDataReceived(hourOfDay: Int, minute: Int) {
-
-                    currentMinute = minute
-                    currentHour = hourOfDay
-
-                    val time_text = "${if (currentHour!! < 10) {
-                        "0${currentHour}"
-                    } else {
-                        currentHour
-                    }}:${if (currentMinute!! < 10) {
-                        "0${currentMinute}"
-                    } else {
-                        currentMinute
-                    }}:00"
-                    editTodoTimeText.text = time_text
+                    dateTime.hourOfDay = hourOfDay
+                    dateTime.minute = minute
+                    editTodoTimeText.text = TimeUtils().timeToString(hourOfDay, minute)
                 }
             }
             TimePickerFragment(timeCallbackListener).show(supportFragmentManager, "timePicker")
         }
 
-//        set onclick listener
-        editTodoDeleteFAB.setOnClickListener { deleteTodo(todo.key) }
+        if (type == EDIT_TYPES.EDIT_TODO) {
+            ScheduleUtils().getSchedule(
+                key!!,
+                object : Database.GetDataCallBack<Database.SCHEDULE> {
+                    override fun onDataReceived(data: Database.SCHEDULE) {
+                        editMode(data)
+                    }
 
-        editTodoCancleImageButton.setOnClickListener {
-            finish()
-        }
-
-        editTodoSaveTextButton.setOnClickListener {
-            saveTodo(todo.key)
+                    override fun onCanceled(message: String) {
+                        toast(message)
+                        finish()
+                    }
+                })
         }
     }
 
-    private fun deleteTodo(key: String) {
-        database.child("Users/${auth.currentUser!!.uid}/Schedules/Todo/${key}").removeValue()
-            .addOnCompleteListener {
+    private fun editMode(todo: Database.SCHEDULE) {
+
+        editTodoContentText.setText(todo.title)
+
+        if (todo.scheduledDateTime != null) {
+            dateTime = TimeUtils().getDateTime(todo.scheduledDateTime!!)
+            editTodoDateText.text =
+                TimeUtils().dateToString(dateTime.year, dateTime.month, dateTime.dayOfMonth)
+            editTodoTimeText.text =
+                TimeUtils().timeToString(dateTime.hourOfDay, dateTime.minute)
+            editTodoScheduledCheckBox.isChecked = true
+        }
+
+        editTodoDeleteFAB.visibility = View.VISIBLE
+    }
+
+    private fun saveTodo(key: String?) {
+        if (isLoading) {
+            return
+        } else {
+            isLoading = true
+        }
+        var todo = Database.SCHEDULE(
+            type = if (!editTodoScheduledCheckBox.isChecked) {
+                Database.SCHEDULE_TYPES.SIMPLE_TODO
+            } else {
+                Database.SCHEDULE_TYPES.SCHEDULED_TODO
+            },
+            title = findViewById<TextView>(R.id.editTodoContentText).text.toString(),
+            requestTimestamp = System.currentTimeMillis(),
+            done = false,
+            scheduledDateTime = if (!editTodoScheduledCheckBox.isChecked) {
+                null
+            } else {
+                TimeUtils().getTimestamp(dateTime)
+            }
+        )
+
+        ScheduleUtils().saveTodo(key, todo, object : SaveDataCallBack<Database.SCHEDULE> {
+            override fun onSuccess() {
                 finish()
             }
-    }
 
-    private fun saveTodo(key: String) {
-        val myTodoReference =
-            database.child("Users/${auth.currentUser!!.uid}/Schedules/Todo")
-
-        var todo = Todo(
-            key,
-            auth.currentUser!!.uid,
-            "DEFAULT_TODO",
-            findViewById<TextView>(R.id.editTodoContentText).text.toString(),
-            System.currentTimeMillis(),
-            false
-        )
-        if (editTodoScheduleCheckBox.isChecked) {
-            todo.type = "SCHEDULED_TODO"
-            val time_text = "${if (currentHour!! < 10) {
-                "0${currentHour}"
-            } else {
-                currentHour
-            }}:${if (currentMinute!! < 10) {
-                "0${currentMinute}"
-            } else {
-                currentMinute
-            }}:00"
-            todo.scheduledDateTime =
-                Timestamp.valueOf(
-                    "${currentYear!! + 1900}-${currentMonth!! + 1}-${currentDayOfMonth} ${time_text}"
-                ).time
-        }
-
-        val updates = HashMap<String, Any?>()
-        updates["$key"] = todo
-
-        myTodoReference.updateChildren(updates)
-
-        finish()
+            override fun onCanceled(message: String) {
+                toast(message)
+                isLoading = false
+            }
+        })
     }
 }
