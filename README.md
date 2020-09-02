@@ -116,3 +116,7 @@ must be included
 - edit todo ✔️
 - change design when todo's done ✔️
 - change design when todo had passed scheduled time ✔️
+
+# 2020.08.28
+
+Version Regenerate to 2.0

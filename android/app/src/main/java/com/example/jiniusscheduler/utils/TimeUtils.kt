@@ -16,7 +16,6 @@ class TimeUtils {
 
     fun createCurrentDateTime(): DateTime {
         val current = LocalDateTime.now()
-
         return DateTime(
             current.year,
             current.month.ordinal,
