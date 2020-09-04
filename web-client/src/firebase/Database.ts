@@ -1,12 +1,21 @@
-import { firebaseApp } from "./Initialize";
+import { firebaseApp, firebaseInstance } from "./Initialize";
+
+import { Note } from "./Schemas";
 
 const db = firebaseApp.firestore();
 
-export const createSchedule = (content: string) => {
+export const getCurrentTimestamp = (): firebase.firestore.Timestamp => {
+  return firebaseInstance.firestore.Timestamp.now();
+};
+
+//  About Schedules
+const notesCollection = db.collection("notes");
+
+export const createNote = (note: Note) => {
   console.log("create schedule");
-  db.collection("test")
+  notesCollection
     .doc()
-    .set({ content: content })
+    .set(note)
     .then(() => {
       console.log("successfully saved");
     })
@@ -14,18 +23,23 @@ export const createSchedule = (content: string) => {
       console.log(reason);
     });
 };
-export const addSchedulesListener = (
-  callback: (schedules: string[]) => void
+
+export const addNotesUpdateListener = (
+  uid: string,
+  callback: (notes: Note[]) => void
 ) => {
   console.log("schedule listener added");
-  db.collection("test").onSnapshot((snapshot) => {
-    const schedules: string[] = [];
-    snapshot.docs.map((document) => {
-      if (typeof document.data().content == "string") {
-        const schedule = (document.data().content as unknown) as string;
-        schedules.push(schedule);
-      }
+  notesCollection
+    .where("uid", "==", uid)
+    .orderBy("createdTime")
+    .onSnapshot((snapshot) => {
+      const notes: Note[] = [];
+      snapshot.docs.map((document) => {
+        if (typeof document.data().content == "string") {
+          const schedule = (document.data() as unknown) as Note;
+          notes.push(schedule);
+        }
+      });
+      callback(notes);
     });
-    callback(schedules);
-  });
 };

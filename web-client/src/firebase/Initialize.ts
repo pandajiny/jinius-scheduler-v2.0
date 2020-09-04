@@ -5,3 +5,4 @@ import "firebase/firestore";
 import { firebaseConfig } from "../../env/firebaseconfig";
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
+export const firebaseInstance = firebase;

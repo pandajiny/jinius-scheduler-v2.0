@@ -25688,7 +25688,24 @@ pu(u.default), exports.__PRIVATE_registerFirestore = pu;
 "use strict";
 
 require("@firebase/firestore");
-},{"@firebase/firestore":"../node_modules/@firebase/firestore/dist/index.cjs.js"}],"firebase/Initialize.ts":[function(require,module,exports) {
+},{"@firebase/firestore":"../node_modules/@firebase/firestore/dist/index.cjs.js"}],"../env/firebaseconfig.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.firebaseConfig = void 0;
+exports.firebaseConfig = {
+  apiKey: "AIzaSyA6NGB1xDmyxVFKSAKJwKhp2dJyu5ibkG0",
+  authDomain: "jinius-scheduler.firebaseapp.com",
+  databaseURL: "https://jinius-scheduler.firebaseio.com",
+  projectId: "jinius-scheduler",
+  storageBucket: "jinius-scheduler.appspot.com",
+  messagingSenderId: "164792061264",
+  appId: "1:164792061264:web:2eba1d19a9e0ef1cdfb055",
+  measurementId: "G-HT4HD0E5NB"
+};
+},{}],"firebase/Initialize.ts":[function(require,module,exports) {
 "use strict";
 
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -25728,7 +25745,7 @@ var __importStar = this && this.__importStar || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.firebaseApp = void 0;
+exports.firebaseInstance = exports.firebaseApp = void 0;
 
 var firebase = __importStar(require("firebase/app"));
 
@@ -25736,18 +25753,11 @@ require("firebase/auth");
 
 require("firebase/firestore");
 
-var firebaseConfig = {
-  apiKey: "AIzaSyA6NGB1xDmyxVFKSAKJwKhp2dJyu5ibkG0",
-  authDomain: "jinius-scheduler.firebaseapp.com",
-  databaseURL: "https://jinius-scheduler.firebaseio.com",
-  projectId: "jinius-scheduler",
-  storageBucket: "jinius-scheduler.appspot.com",
-  messagingSenderId: "164792061264",
-  appId: "1:164792061264:web:2eba1d19a9e0ef1cdfb055",
-  measurementId: "G-HT4HD0E5NB"
-};
-exports.firebaseApp = firebase.initializeApp(firebaseConfig);
-},{"firebase/app":"../node_modules/firebase/app/dist/index.cjs.js","firebase/auth":"../node_modules/firebase/auth/dist/index.esm.js","firebase/firestore":"../node_modules/firebase/firestore/dist/index.esm.js"}],"firebase/Auth.ts":[function(require,module,exports) {
+var firebaseconfig_1 = require("../../env/firebaseconfig");
+
+exports.firebaseApp = firebase.initializeApp(firebaseconfig_1.firebaseConfig);
+exports.firebaseInstance = firebase;
+},{"firebase/app":"../node_modules/firebase/app/dist/index.cjs.js","firebase/auth":"../node_modules/firebase/auth/dist/index.esm.js","firebase/firestore":"../node_modules/firebase/firestore/dist/index.esm.js","../../env/firebaseconfig":"../env/firebaseconfig.ts"}],"firebase/Auth.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -25896,7 +25906,7 @@ var __generator = this && this.__generator || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.doSignOut = exports.checkAuthUser = exports.doLoginWithEmailAndPassword = exports.createUserWithEmailPassword = void 0;
+exports.doSignOut = exports.getAuthUser = exports.doLoginWithEmailAndPassword = exports.createUserWithEmailPassword = void 0;
 
 var Initialize_1 = require("./Initialize");
 
@@ -25949,18 +25959,18 @@ exports.doLoginWithEmailAndPassword = function (props) {
   });
 };
 
-exports.checkAuthUser = function () {
+exports.getAuthUser = function () {
   return __awaiter(void 0, void 0, Promise, function () {
     return __generator(this, function (_a) {
       return [2
       /*return*/
-      , new Promise(function (resolve, reject) {
+      , new Promise(function (resolve) {
         // todo : set timeout
         Initialize_1.firebaseApp.auth().onAuthStateChanged(function (user) {
           if (user != null) {
             resolve(user);
           } else {
-            reject("user not logged-in");
+            resolve(null);
           }
         });
       })];
@@ -25986,10 +25996,11 @@ exports.doSignOut = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LOGIN_PAGE = exports.MAIN_PAGE = void 0;
-exports.MAIN_PAGE = "/index.html";
+exports.SIGN_UP_PAGE = exports.LOGIN_PAGE = exports.HOME = void 0;
+exports.HOME = "/index.html";
 exports.LOGIN_PAGE = "pages/login.html";
-},{}],"pages/login.ts":[function(require,module,exports) {
+exports.SIGN_UP_PAGE = "pages/sign-up.html";
+},{}],"Navigator.ts":[function(require,module,exports) {
 "use strict";
 
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -26029,21 +26040,213 @@ var __importStar = this && this.__importStar || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.goSignUpPage = exports.goLoginPage = exports.goHome = void 0;
+
+var PATHS = __importStar(require("./constants/pathnames"));
+
+exports.goHome = function () {
+  window.location.pathname = PATHS.HOME;
+};
+
+exports.goLoginPage = function () {
+  window.location.pathname = PATHS.LOGIN_PAGE;
+};
+
+exports.goSignUpPage = function () {
+  window.location.pathname = PATHS.SIGN_UP_PAGE;
+};
+},{"./constants/pathnames":"constants/pathnames.ts"}],"pages/login.ts":[function(require,module,exports) {
+"use strict";
+
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+    label: 0,
+    sent: function sent() {
+      if (t[0] & 1) throw t[1];
+      return t[1];
+    },
+    trys: [],
+    ops: []
+  },
+      f,
+      y,
+      t,
+      g;
+  return g = {
+    next: verb(0),
+    "throw": verb(1),
+    "return": verb(2)
+  }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+
+    while (_) {
+      try {
+        if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+        if (y = 0, t) op = [op[0] & 2, t.value];
+
+        switch (op[0]) {
+          case 0:
+          case 1:
+            t = op;
+            break;
+
+          case 4:
+            _.label++;
+            return {
+              value: op[1],
+              done: false
+            };
+
+          case 5:
+            _.label++;
+            y = op[1];
+            op = [0];
+            continue;
+
+          case 7:
+            op = _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+
+          default:
+            if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+              _ = 0;
+              continue;
+            }
+
+            if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+              _.label = op[1];
+              break;
+            }
+
+            if (op[0] === 6 && _.label < t[1]) {
+              _.label = t[1];
+              t = op;
+              break;
+            }
+
+            if (t && _.label < t[2]) {
+              _.label = t[2];
+
+              _.ops.push(op);
+
+              break;
+            }
+
+            if (t[2]) _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+        }
+
+        op = body.call(thisArg, _);
+      } catch (e) {
+        op = [6, e];
+        y = 0;
+      } finally {
+        f = t = 0;
+      }
+    }
+
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var Auth_1 = require("../firebase/Auth");
 
-var PATHS = __importStar(require("../constants/pathnames"));
+var Navigator_1 = require("../Navigator"); // back to main
 
+
+var $mainButton = document.getElementById("main-button");
+$mainButton === null || $mainButton === void 0 ? void 0 : $mainButton.addEventListener("click", function () {
+  Navigator_1.goHome();
+}); // check login state
+
+var checkAuthUser = function checkAuthUser() {
+  return __awaiter(void 0, void 0, void 0, function () {
+    var user;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          return [4
+          /*yield*/
+          , Auth_1.getAuthUser()];
+
+        case 1:
+          user = _a.sent();
+
+          if (user != null) {
+            Navigator_1.goHome();
+          }
+
+          return [2
+          /*return*/
+          ];
+      }
+    });
+  });
+};
+
+checkAuthUser();
 var $message = document.getElementById("login-message");
 
 var updateMessage = function updateMessage(message) {
   $message.innerHTML = message;
 };
 
-$message.addEventListener("click", function (e) {
-  console.log("hello");
-  console.log(Auth_1.checkAuthUser());
-});
 var $emailInput = document.getElementById("login-email-input");
 var $passwordInput = document.getElementById("login-password-input");
 var $loginButton = document.getElementById("login-button");
@@ -26060,7 +26263,7 @@ var doLogin = function doLogin() {
     password: password
   }).then(function (result) {
     if (result.ok) {
-      window.location.pathname = PATHS.MAIN_PAGE;
+      Navigator_1.goHome();
     } else {
       if (result.error != null) {
         updateMessage(result.error);
@@ -26068,7 +26271,12 @@ var doLogin = function doLogin() {
     }
   });
 };
-},{"../firebase/Auth":"firebase/Auth.ts","../constants/pathnames":"constants/pathnames.ts"}],"C:/Users/astic/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+var $signupButton = document.getElementById("signup-button");
+$signupButton.addEventListener("click", function () {
+  Navigator_1.goSignUpPage();
+});
+},{"../firebase/Auth":"firebase/Auth.ts","../Navigator":"Navigator.ts"}],"C:/Users/astic/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -26096,7 +26304,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65418" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53985" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

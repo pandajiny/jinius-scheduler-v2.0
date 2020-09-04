@@ -1,35 +1,47 @@
-import { submitSchedule } from "./Schedules";
-import { checkAuthUser, doSignOut } from "./firebase/Auth";
-import { addSchedulesListener } from "./firebase/Database";
+import { getAuthUser, doSignOut } from "./firebase/Auth";
+import {
+  addNotesUpdateListener,
+  getCurrentTimestamp,
+  createNote,
+} from "./firebase/Database";
+import { Note } from "./firebase/Schemas";
 
-import * as PATHS from "./constants/pathnames";
+import { goLoginPage } from "./Navigator";
 
 // login
-const $loginMessage = document.getElementById("login-message") as HTMLElement;
-
 let isLoggedIn: boolean | null = null;
+
+let currentUser: firebase.User | null = null;
+
+// check user Auth and update login state
+const checkUserLogin = async () => {
+  const user = await getAuthUser();
+  if (user != null) {
+    currentUser = user;
+    isLoggedIn = true;
+  } else {
+    isLoggedIn = false;
+  }
+  updateLoginView(isLoggedIn);
+};
+
+checkUserLogin();
+
+const $loginMessage = document.getElementById("login-message") as HTMLElement;
 
 const $loginButton = document.getElementById(
   "login-button"
 ) as HTMLButtonElement;
 
-// check user Auth
-checkAuthUser()
-  .then((user) => {
-    isLoggedIn = true;
-    updateLoginButton(isLoggedIn);
-    $loginMessage.innerHTML = `Welcome,${user.email}!`;
-  })
-  .catch((reason) => {
-    isLoggedIn = false;
-    updateLoginButton(isLoggedIn);
-    $loginMessage.innerHTML = `${reason}`;
-  });
-
-const updateLoginButton = (isLoggedIn: boolean) => {
-  if (isLoggedIn) {
+const updateLoginView = (isLoggedIn: boolean) => {
+  if (isLoggedIn && currentUser != null) {
+    // login
+    $loginMessage.innerHTML = `Welcome,${currentUser.email}!`;
     $loginButton.innerHTML = "Sign-Out";
+    setNotesListListener(currentUser.uid);
   } else {
+    // no login
+    $loginMessage.innerHTML = `Please Login first`;
     $loginButton.innerHTML = "Go Login Page";
   }
 };
@@ -43,13 +55,13 @@ $loginButton.addEventListener("click", (e: MouseEvent) => {
 
 const loginButtonAction = (isLoggedIn: boolean) => {
   if (!isLoggedIn) {
-    window.location.pathname = PATHS.LOGIN_PAGE;
+    goLoginPage();
   } else {
     doSignOut().then((result) => {
       if (result.ok) {
         // set Action
         isLoggedIn = false;
-        updateLoginButton(isLoggedIn);
+        updateLoginView(isLoggedIn);
       }
     });
   }
@@ -67,27 +79,49 @@ export const $inputEnterButton = document.getElementById(
 $inputEnterButton?.addEventListener("click", (e: MouseEvent) => {
   const input = $scheduleInput.value;
   if (typeof input == "string" && input.length > 0) {
-    submitSchedule();
+    submitNote();
   }
 });
 
 $scheduleInput.addEventListener("keypress", (e: KeyboardEvent) => {
   if (e.key == "Enter") {
-    submitSchedule();
+    submitNote();
   }
 });
+
+const submitNote = async () => {
+  const uid = await (await getAuthUser()).uid;
+  const content = $scheduleInput.value;
+  const createdTime = getCurrentTimestamp();
+
+  if (content.length == 0) {
+    return;
+  }
+
+  const note: Note = {
+    uid,
+    content,
+    createdTime,
+  };
+
+  $scheduleInput.value = "";
+
+  createNote(note);
+};
 
 // schedule list
 export const $scheduleList = document.getElementById(
   "schedules-list"
 ) as HTMLUListElement;
 
-addSchedulesListener((schedules) => {
-  $scheduleList.innerHTML = "";
-  schedules.map((schedule) => {
-    const $item = document.createElement("li");
-    const textNode = document.createTextNode(schedule);
-    $item.appendChild(textNode);
-    $scheduleList.appendChild($item);
+const setNotesListListener = (uid: string) => {
+  addNotesUpdateListener(uid, (notes) => {
+    $scheduleList.innerHTML = "";
+    notes.map((note) => {
+      const $item = document.createElement("li");
+      const textNode = document.createTextNode(note.content);
+      $item.appendChild(textNode);
+      $scheduleList.appendChild($item);
+    });
   });
-});
+};

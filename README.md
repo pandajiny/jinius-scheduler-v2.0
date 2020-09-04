@@ -120,3 +120,7 @@ must be included
 # 2020.08.28
 
 Version Regenerate to 2.0
+
+# 2020.09.3
+
+using parcel, vanilla js, html and firebase

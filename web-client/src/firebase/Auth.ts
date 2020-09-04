@@ -1,27 +1,26 @@
 import { firebaseApp } from "./Initialize";
 
-type CreateUserResult = {
+interface AuthActionResult {
   ok: boolean;
   error?: string;
-};
-
+}
 export const createUserWithEmailPassword = async (
   email: string,
   password: string
-): Promise<CreateUserResult> => {
+): Promise<AuthActionResult> => {
   return firebaseApp
     .auth()
     .createUserWithEmailAndPassword(email, password)
     .then((credential) => {
       console.log(`creating user successfull : ${credential.user?.email}`);
-      const result: CreateUserResult = {
+      const result: AuthActionResult = {
         ok: true,
       };
       return result;
     })
     .catch((reason) => {
       console.log(reason);
-      const result: CreateUserResult = {
+      const result: AuthActionResult = {
         ok: false,
         error: reason,
       };
@@ -34,14 +33,9 @@ type LoginRequest = {
   password: string;
 };
 
-type LoginResult = {
-  ok: boolean;
-  error?: string;
-};
-
 export const doLoginWithEmailAndPassword = async (
   props: LoginRequest
-): Promise<LoginResult> => {
+): Promise<AuthActionResult> => {
   const { email, password } = props;
   return firebaseApp
     .auth()
@@ -60,25 +54,20 @@ export const doLoginWithEmailAndPassword = async (
     });
 };
 
-export const checkAuthUser = async (): Promise<firebase.User> => {
-  return new Promise((resolve, reject) => {
+export const getAuthUser = async (): Promise<firebase.User | null> => {
+  return new Promise((resolve) => {
     // todo : set timeout
     firebaseApp.auth().onAuthStateChanged((user) => {
       if (user != null) {
         resolve(user);
       } else {
-        reject("user not logged-in");
+        resolve(null);
       }
     });
   });
 };
 
-type SignOutResult = {
-  ok: boolean;
-  error?: string;
-};
-
-export const doSignOut = (): Promise<SignOutResult> => {
+export const doSignOut = (): Promise<AuthActionResult> => {
   return firebaseApp
     .auth()
     .signOut()

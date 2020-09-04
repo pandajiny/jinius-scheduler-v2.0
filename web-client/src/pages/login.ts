@@ -1,10 +1,22 @@
-import {
-  createUserWithEmailPassword,
-  doLoginWithEmailAndPassword,
-  checkAuthUser,
-} from "../firebase/Auth";
+import { doLoginWithEmailAndPassword, getAuthUser } from "../firebase/Auth";
 
-import * as PATHS from "../constants/pathnames";
+import { goHome, goSignUpPage } from "../Navigator";
+
+// back to main
+const $mainButton = document.getElementById("main-button") as HTMLButtonElement;
+$mainButton?.addEventListener("click", () => {
+  goHome();
+});
+
+// check login state
+const checkAuthUser = async () => {
+  const user = await getAuthUser();
+  if (user != null) {
+    goHome();
+  }
+};
+
+checkAuthUser();
 
 const $message = document.getElementById("login-message") as HTMLElement;
 
@@ -12,14 +24,10 @@ const updateMessage = (message: string) => {
   $message.innerHTML = message;
 };
 
-$message.addEventListener("click", (e: MouseEvent) => {
-  console.log("hello");
-  console.log(checkAuthUser());
-});
-
 const $emailInput = document.getElementById(
   "login-email-input"
 ) as HTMLInputElement;
+
 const $passwordInput = document.getElementById(
   "login-password-input"
 ) as HTMLInputElement;
@@ -38,7 +46,7 @@ const doLogin = () => {
   updateMessage("loading...");
   doLoginWithEmailAndPassword({ email, password }).then((result) => {
     if (result.ok) {
-      window.location.pathname = PATHS.MAIN_PAGE;
+      goHome();
     } else {
       if (result.error != null) {
         updateMessage(result.error);
@@ -46,3 +54,11 @@ const doLogin = () => {
     }
   });
 };
+
+const $signupButton = document.getElementById(
+  "signup-button"
+) as HTMLButtonElement;
+
+$signupButton.addEventListener("click", () => {
+  goSignUpPage();
+});
